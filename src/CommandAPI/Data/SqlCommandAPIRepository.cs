@@ -38,7 +38,11 @@ namespace CommandAPI.Data
     }
     public void DeleteCommand(Command command)
     {
-      throw new System.NotImplementedException();
+      if (command == null)
+      {
+        throw new ArgumentNullException();
+      }
+      _context.CommandItems.Remove(command);
     }
 
     public bool SaveChanges()

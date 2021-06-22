@@ -20,7 +20,7 @@ namespace CommandAPI.Controllers
       _mapper = mapper;
     }
     [HttpGet]
-    public ActionResult<IEnumerable<CommandReadDto>> Get()
+    public ActionResult<IEnumerable<CommandReadDto>> GetAllCommands()
     {
       var commandItems = _repository.GetAllCommands();
       return Ok(_mapper.Map<IEnumerable<CommandReadDto>>(commandItems));
@@ -36,7 +36,7 @@ namespace CommandAPI.Controllers
       return Ok(_mapper.Map<CommandReadDto>(commandItem));
     }
     [HttpPost]
-    public ActionResult<CommandCreateDto> CreateCommand(CommandCreateDto commandCreateDto)
+    public ActionResult<CommandReadDto> CreateCommand(CommandCreateDto commandCreateDto)
     {
       var commandModel = _mapper.Map<Command>(commandCreateDto);
       _repository.CreateCommand(commandModel);
@@ -76,6 +76,18 @@ namespace CommandAPI.Controllers
 
       _mapper.Map(commandToPatch, commandModelFromRepository);
       _repository.UpdateCommand(commandModelFromRepository);
+      _repository.SaveChanges();
+      return NoContent();
+    }
+    [HttpDelete("{id}")]
+    public ActionResult DeleteCommand(int id)
+    {
+      var commandModelFromRepository = _repository.GetCommandById(id);
+      if (commandModelFromRepository == null)
+      {
+        return NotFound();
+      }
+      _repository.DeleteCommand(commandModelFromRepository);
       _repository.SaveChanges();
       return NoContent();
     }

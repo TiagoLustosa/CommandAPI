@@ -49,7 +49,9 @@ namespace CommandAPI.Tests
       var result = controller.GetAllCommands();
 
       //Assert
-      Assert.IsType<OkObjectResult>(result.Result);
+      var okResult = result.Result as OkObjectResult;
+      var commands = okResult.Value as List<CommandReadDto>;
+      Assert.Empty(commands);
     }
 
     [Fact]
