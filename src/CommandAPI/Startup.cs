@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Newtonsoft.Json.Serialization;
 
 namespace CommandAPI
@@ -30,6 +31,11 @@ namespace CommandAPI
       builder.Username = Configuration["UserID"];
       builder.Password = Configuration["Password"];
       services.AddDbContext<CommandContext>(opt => opt.UseNpgsql(builder.ConnectionString));
+      services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+      {
+        opt.Audience = Configuration["ResourceId"];
+        opt.Authority = $"{Configuration["Instance"]}{Configuration["TenantId"]}";
+      });
 
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -47,6 +53,8 @@ namespace CommandAPI
       }
 
       app.UseRouting();
+      app.UseAuthentication();
+      app.UseAuthorization();
 
       app.UseEndpoints(endpoints =>
       {
